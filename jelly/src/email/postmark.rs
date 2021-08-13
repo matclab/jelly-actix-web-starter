@@ -1,19 +1,23 @@
-//! Provides a very, very basic `Email` struct that can send via Postmark. 
-//! This is designed for transactional emails - if you need otherwise, 
+//! Provides a very, very basic `Email` struct that can send via Postmark.
+//! This is designed for transactional emails - if you need otherwise,
 //! you're free to import Lettre or whatever.
 //!
 //! If you prefer a different provider than Postmark, you can swap the
 //! send implementation in here.
-
 use std::collections::HashMap;
 use std::env::var;
+use log::{info};
 
 use chrono::{Datelike, Utc};
+
+#[cfg(feature = "email-postmark")]
 use serde::{Serialize};
 
-/// Represents information that Postmark can use to send emails. This by 
-/// default relies on templates existing on the Postmark side - you'll send 
+
+/// Represents information that Postmark can use to send emails. This by
+/// default relies on templates existing on the Postmark side - you'll send
 /// less data over the wire this way.
+#[cfg(feature = "email-postmark")]
 #[derive(Debug, Default, Serialize)]
 pub struct Email<'a> {
     /// The template alias (e.g, 'verify-email`).
@@ -27,7 +31,7 @@ pub struct Email<'a> {
     /// Who's sending this.
     #[serde(rename = "From")]
     pub from: String,
-    
+
     /// Who to send to. Comma-delimited.
     #[serde(
         rename = "To"
@@ -35,6 +39,7 @@ pub struct Email<'a> {
     pub to: String
 }
 
+#[cfg(feature = "email-postmark")]
 impl<'a> Email<'a> {
     /// Construct a new `Email`.
     pub fn new(
@@ -46,12 +51,12 @@ impl<'a> Email<'a> {
             alias: alias,
             model: model,
             to: to.join(","),
-            from: var("POSTMARK_DEFAULT_FROM")
-                .expect("POSTMARK_DEFAULT_FROM not set!")
+            from: var("EMAIL_DEFAULT_FROM")
+                .expect("EMAIL_DEFAULT_FROM not set!")
         }
     }
 
-    /// Send the email. Relies on you ensuring that `POSTMARK_API_KEY` 
+    /// Send the email. Relies on you ensuring that `POSTMARK_API_KEY`
     /// is set in your `.env`.
     pub fn send(mut self) -> Result<(), anyhow::Error> {
         let now = Utc::now();
@@ -68,3 +73,4 @@ impl<'a> Email<'a> {
         Ok(())
     }
 }
+

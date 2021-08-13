@@ -9,6 +9,7 @@ use actix_session::CookieSession;
 use sqlx::postgres::{PgPoolOptions};
 
 use crate::jobs::{DEFAULT_QUEUE, JobState};
+use crate::email::{Email, Configurable};
 
 /// This struct provides a slightly simpler way to write `main.rs` in
 /// the root project, and forces more coupling to app-specific modules.
@@ -49,6 +50,7 @@ impl Server {
     pub async fn run(self) -> std::io::Result<dev::Server> {
         dotenv::dotenv().ok();
         pretty_env_logger::init();
+        Email::check_conf();
         
         let bind = env::var("BIND_TO").expect("BIND_TO not set!");
         let _root_domain = env::var("DOMAIN").expect("DOMAIN not set!");
@@ -108,7 +110,7 @@ impl Server {
             
             let storage = Storage::new();
             let queue = create_server(storage);
-            let state = JobState::new("JobState", pool.clone());
+            let state = JobState::new("JobState", pool.clone(), templates.clone());
             let mut worker_config = WorkerConfig::new(move || state.clone());
 
             for handler in jobs.iter() {
