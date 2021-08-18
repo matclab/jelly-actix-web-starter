@@ -4,69 +4,29 @@
 //!
 //! If you prefer a different provider than Postmark, you can swap the
 //! send implementation in here.
-use std::collections::HashMap;
 use std::env::var;
-use log::{info};
 
-use chrono::{Datelike, Utc};
+use super::common::{Email,env_exists_and_not_empty};
 
-#[cfg(feature = "email-postmark")]
-use serde::{Serialize};
-
-
-/// Represents information that Postmark can use to send emails. This by
-/// default relies on templates existing on the Postmark side - you'll send
-/// less data over the wire this way.
-#[cfg(feature = "email-postmark")]
-#[derive(Debug, Default, Serialize)]
-pub struct Email<'a> {
-    /// The template alias (e.g, 'verify-email`).
-    #[serde(rename = "TemplateAlias")]
-    pub alias: &'a str,
-
-    /// Data that the template can use to render.
-    #[serde(rename = "TemplateModel")]
-    pub model: HashMap<&'a str, String>,
-
-    /// Who's sending this.
-    #[serde(rename = "From")]
-    pub from: String,
-
-    /// Who to send to. Comma-delimited.
-    #[serde(
-        rename = "To"
-    )]
-    pub to: String
+/// Check that all needed environment variables are set and not empty.
+pub fn check_conf() {
+    vec![
+        "POSTMARK_API_KEY",
+    ]
+    .into_iter()
+    .for_each(|env| env_exists_and_not_empty(env));
 }
 
-#[cfg(feature = "email-postmark")]
-impl<'a> Email<'a> {
-    /// Construct a new `Email`.
-    pub fn new(
-        alias: &'a str,
-        to: &[String],
-        model: HashMap<&'a str, String>
-    ) -> Self {
-        Email {
-            alias: alias,
-            model: model,
-            to: to.join(","),
-            from: var("EMAIL_DEFAULT_FROM")
-                .expect("EMAIL_DEFAULT_FROM not set!")
-        }
-    }
+
+impl Email {
 
     /// Send the email. Relies on you ensuring that `POSTMARK_API_KEY`
     /// is set in your `.env`.
-    pub fn send(mut self) -> Result<(), anyhow::Error> {
-        let now = Utc::now();
-        let year = now.year();
-        self.model.insert("year", year.to_string());
-
-        let api_key = std::env::var("POSTMARK_API_KEY")
+    pub fn send_via_postmark(&self) -> Result<(), anyhow::Error> {
+        let api_key = var("POSTMARK_API_KEY")
             .expect("POSTMARK_API_KEY not set!");
 
-        minreq::post("https://api.postmarkapp.com/email/withTemplate")
+        minreq::post("https://api.postmarkapp.com/email")
             .with_header("X-Postmark-Server-Token", api_key)
             .with_json(&self)?.send()?;
 
