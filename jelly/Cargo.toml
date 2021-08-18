@@ -39,12 +39,13 @@ tera = "1.5"
 validator = "0.11"
 zxcvbn = "2.0.1"
 lettre = { version="0.10.0-rc.3", optional = true }
+sendgrid = { version="0.17", optional = true }
 
 [features]
 default = [ ]
 email-smtp = [ "lettre" ]
 email-postmark = [ ]
-email-sendgrid = [ ]
+email-sendgrid = [ "sendgrid", "lettre" ]
 static = ["actix-files"]
 template_watcher = ["notify"]
 production = ["actix-web/secure-cookies", "djangohashers/pbkdf2"]

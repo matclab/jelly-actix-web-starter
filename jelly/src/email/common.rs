@@ -14,6 +14,14 @@ pub trait Configurable {
     /// This function shall be used at start up to detect misconfiguration as soon as possible
     /// It panics if configuration is incorrect.
     fn check_conf();
+
+}
+
+/// Check that environment variable exists and is not empty else panic.
+pub fn env_exists_and_not_empty(env: &str) {
+    if var(env).expect(&format!("{} not set!", env)).is_empty() {
+        panic!("{} is empty", env)
+    }
 }
 
 #[derive(Debug, Default, Serialize)]
