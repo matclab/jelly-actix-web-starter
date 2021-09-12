@@ -56,6 +56,7 @@ impl Email {
 
         let mailer = mailer_builder.build();
         mailer.send(&email)?;
+        debug!("Mail sent to {} via smtp.", &self.to);
 
         Ok(())
     }
