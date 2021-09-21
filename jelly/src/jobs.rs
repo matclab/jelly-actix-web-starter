@@ -1,7 +1,7 @@
 //! This module contains types used in Job registration and handling.
 
-use std::sync::{Arc, RwLock};
 use sqlx::postgres::PgPool;
+use std::sync::{Arc, RwLock};
 use tera::Tera;
 
 pub use background_jobs::{Job, WorkerConfig};
@@ -27,4 +27,3 @@ impl JobState {
         }
     }
 }
-

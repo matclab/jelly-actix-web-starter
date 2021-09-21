@@ -1,20 +1,18 @@
 use log::info;
-use std::env::var;
 use std::env;
+use std::env::var;
 use std::sync::{Arc, RwLock};
-use tera::{Tera, Context};
+use tera::{Context, Tera};
 
-use chrono::{Datelike, Utc};
 use anyhow::{anyhow, Error, Result};
-use serde::{Serialize};
-
+use chrono::{Datelike, Utc};
+use serde::Serialize;
 
 pub trait Configurable {
     /// Check that configuration is complete.
     /// This function shall be used at start up to detect misconfiguration as soon as possible
     /// It panics if configuration is incorrect.
     fn check_conf();
-
 }
 
 /// Check that environment variable exists and is not empty else panic.
@@ -26,7 +24,6 @@ pub fn env_exists_and_not_empty(env: &str) {
 
 #[derive(Debug, Default, Serialize)]
 pub struct Email {
-
     /// Who's sending this.
     #[serde(rename = "From")]
     pub from: String,
@@ -70,7 +67,7 @@ impl Email {
         context.insert("year", &year.to_string());
         context.insert("subject", &subject);
 
-        for (k,v) in env::vars() {
+        for (k, v) in env::vars() {
             if k.starts_with("JELLY_") {
                 context.insert(k, &v);
             }
@@ -78,19 +75,23 @@ impl Email {
 
         debug!("Context for template {} : {:?}", template_name, &context);
 
-        let bodyhtml = engine.render(&(template_name.to_owned() + ".html"), &context).map_err(Error::msg)?;
-        let body = engine.render(&(template_name.to_owned() + ".txt"), &context).map_err(Error::msg)?;
+        let bodyhtml = engine
+            .render(&(template_name.to_owned() + ".html"), &context)
+            .map_err(Error::msg)?;
+        let body = engine
+            .render(&(template_name.to_owned() + ".txt"), &context)
+            .map_err(Error::msg)?;
 
         Ok(Email {
             to: to.join(","),
             from: var("EMAIL_DEFAULT_FROM").expect("EMAIL_DEFAULT_FROM not set!"),
             bodyhtml: bodyhtml,
             body: body,
-            subject : subject.to_string(),
+            subject: subject.to_string(),
             #[cfg(not(feature = "email-postmark"))]
             postmark_message_stream: "".to_string(),
             #[cfg(feature = "email-postmark")]
-            postmark_message_stream : var("POSTMARK_MESSAGE_STREAM")
+            postmark_message_stream: var("POSTMARK_MESSAGE_STREAM")
                 .expect("POSTMARK_MESSAGE_STREAM not set!"),
         })
     }

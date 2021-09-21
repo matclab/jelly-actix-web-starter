@@ -27,15 +27,15 @@ impl Email {
     pub fn send(self) -> Result<(), anyhow::Error> {
         let mut res = Result::Err(anyhow!("No email provider configured"));
         #[cfg(feature = "email-postmark")]
-        if res.is_err() { 
+        if res.is_err() {
             res = Email::send_via_postmark(&self);
         }
         #[cfg(feature = "email-sendgrid")]
-        if res.is_err() { 
+        if res.is_err() {
             res = Email::send_via_sendgrid(&self);
         }
         #[cfg(feature = "email-smtp")]
-        if res.is_err() { 
+        if res.is_err() {
             res = Email::send_via_smtp(&self);
         }
         res

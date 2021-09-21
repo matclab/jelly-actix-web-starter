@@ -2,7 +2,7 @@ use std::env::var;
 
 use anyhow::Result;
 
-use super::common::{Email,env_exists_and_not_empty};
+use super::common::{env_exists_and_not_empty, Email};
 use lettre::message::MultiPart;
 use lettre::transport::smtp::{authentication::Credentials, client::Tls};
 use lettre::{Message, SmtpTransport, Transport};
@@ -39,7 +39,10 @@ impl Email {
             .reply_to(reply_to.parse()?)
             .to(self.to.parse()?)
             .subject(&self.subject)
-            .multipart(MultiPart::alternative_plain_html(self.body.clone(), self.bodyhtml.clone()))?;
+            .multipart(MultiPart::alternative_plain_html(
+                self.body.clone(),
+                self.bodyhtml.clone(),
+            ))?;
 
         let creds = Credentials::new(username, password);
 
