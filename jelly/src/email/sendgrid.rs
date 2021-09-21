@@ -1,52 +1,67 @@
-use std::env::var;
-
-use anyhow::Result;
-
 use super::common::env_exists_and_not_empty;
 pub use super::common::Email;
+use anyhow::Result;
+use serde::Serialize;
+use std::env::var;
 
-use sendgrid::v3::*;
-use lettre::message::Mailbox;
-use std::str::FromStr;
-
+#[derive(Serialize, Debug)]
+struct EmailAddress<'a> {
+    email: &'a String,
+}
+#[derive(Serialize, Debug)]
+struct Personalization<'a> {
+    to: Vec<EmailAddress<'a>>,
+}
+#[derive(Serialize, Debug)]
+struct Content<'a> {
+    r#type: &'a String,
+    value: &'a String,
+}
+#[derive(Serialize, Debug)]
+struct SendgridV3Data<'a> {
+    personalizations: Vec<Personalization<'a>>,
+    from: EmailAddress<'a>,
+    subject: &'a String,
+    content: Vec<Content<'a>>,
+}
 
 /// Check that all needed environment variables are set and not empty.
 pub fn check_conf() {
-    vec![
-        "SENDGRID_API_KEY",
-    ]
-    .into_iter()
-    .for_each(|env| env_exists_and_not_empty(env));
+    vec!["SENDGRID_API_KEY"]
+        .into_iter()
+        .for_each(|env| env_exists_and_not_empty(env));
 }
 
 impl Email {
-    /// Send the email. Relies on you ensuring that `EMAIL_DEFAULT_FROM`,
-    /// `EMAIL_SMTP_HOST`, `EMAIL_SMTP_USERNAME`, and `EMAIL_SMTP_PASSWORD`
-    /// are set in your `.env`.
+    /// Send the email.
     pub fn send_via_sendgrid(&self) -> Result<(), anyhow::Error> {
-
-        // Build a sendgrid addres with the help of letter Mailbox (not so clean indeed).
-        let mailbox = Mailbox::from_str(&self.to)?;
-        let mut to_address = sendgrid::v3::Email::new(mailbox.email.to_string());
-        if let Some(name) = mailbox.name {
-            to_address = to_address.set_name(name);
-        }
-        let message = Message::new(to_address)
-            .set_subject(&self.subject)
-            .add_content(
-                Content::new()
-                    .set_content_type("text/html")
-                    .set_value(&self.bodyhtml)
-            )
-            .add_content(
-                Content::new()
-                    .set_content_type("text/plain")
-                    .set_value(&self.body)
-            );
+        let text_plain = "text/plain".to_string();
+        let text_html = "text/html".to_string();
+        let data = SendgridV3Data {
+            personalizations: vec![Personalization {
+                to: vec![EmailAddress { email: &self.to }],
+            }],
+            from: EmailAddress { email: &self.from },
+            subject: &self.subject,
+            content: vec![
+                Content {
+                    r#type: &text_plain,
+                    value: &self.body,
+                },
+                Content {
+                    r#type: &text_html,
+                    value: &self.bodyhtml,
+                },
+            ],
+        };
+        debug!("sendgrid payload: {}", serde_json::to_string(&data)?);
 
         let api_key = var("SENDGRID_API_KEY").expect("SENDGRID_API_KEY not set!");
-        let sender = Sender::new(api_key);
-        sender.send(&message)?;
+        minreq::post("https://api.sendgrid.com/v3/mail/send")
+            .with_header("Authorization: Bearer", api_key)
+            .with_json(&self)?
+            .send()?;
+        debug!("Mail sent to {} via sendgrid.", &self.to);
         Ok(())
     }
 }
