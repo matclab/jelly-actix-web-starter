@@ -12,6 +12,7 @@ use super::common::{Email,env_exists_and_not_empty};
 pub fn check_conf() {
     vec![
         "POSTMARK_API_KEY",
+        "POSTMARK_MESSAGE_STREAM",
     ]
     .into_iter()
     .for_each(|env| env_exists_and_not_empty(env));

@@ -46,6 +46,10 @@ pub struct Email {
     /// What to send (HTML)
     #[serde(rename = "HtmlBody")]
     pub bodyhtml: String,
+
+    /// Postmark stream to use
+    #[serde(rename = "MessageStream")]
+    pub postmark_message_stream: String,
 }
 
 impl Email {
@@ -72,8 +76,7 @@ impl Email {
             }
         }
 
-        // some debug info
-        info!("Context for template {} : {:?}", template_name, &context);
+        debug!("Context for template {} : {:?}", template_name, &context);
 
         let bodyhtml = engine.render(&(template_name.to_owned() + ".html"), &context).map_err(Error::msg)?;
         let body = engine.render(&(template_name.to_owned() + ".txt"), &context).map_err(Error::msg)?;
@@ -84,6 +87,11 @@ impl Email {
             bodyhtml: bodyhtml,
             body: body,
             subject : subject.to_string(),
+            #[cfg(not(feature = "email-postmark"))]
+            postmark_message_stream: "".to_string(),
+            #[cfg(feature = "email-postmark")]
+            postmark_message_stream : var("POSTMARK_MESSAGE_STREAM")
+                .expect("POSTMARK_MESSAGE_STREAM not set!"),
         })
     }
 }
