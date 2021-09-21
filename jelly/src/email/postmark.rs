@@ -31,6 +31,7 @@ impl Email {
             .with_header("X-Postmark-Server-Token", api_key)
             .with_json(&self)?.send()?;
 
+        debug!("Mail sent to {} via postmark.", &self.to);
         Ok(())
     }
 }
