@@ -44,6 +44,7 @@ lettre = { version="0.10.0-rc.3", optional = true }
 default = [ ]
 email-smtp = [ "lettre" ]
 email-postmark = [ ]
+email-sendgrid = [ ]
 static = ["actix-files"]
 template_watcher = ["notify"]
 production = ["actix-web/secure-cookies", "djangohashers/pbkdf2"]
