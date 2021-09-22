@@ -1,4 +1,3 @@
-use log::info;
 use std::env;
 use std::env::var;
 use std::sync::{Arc, RwLock};
