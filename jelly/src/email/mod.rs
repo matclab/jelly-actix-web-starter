@@ -1,10 +1,10 @@
-pub use common::Configurable;
+pub (crate) use common::Configurable;
 pub use common::Email;
 pub use tera::Context;
 
 use anyhow::anyhow;
 
-pub mod common;
+pub (crate) mod common;
 #[cfg(feature = "email-postmark")]
 pub mod postmark;
 #[cfg(feature = "email-sendgrid")]

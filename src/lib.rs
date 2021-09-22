@@ -24,4 +24,3 @@ pub async fn main() -> io::Result<()> {
         .await?
         .await
 }
-

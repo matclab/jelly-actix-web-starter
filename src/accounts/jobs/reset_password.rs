@@ -16,6 +16,12 @@ pub struct SendResetPasswordEmail {
     pub to: String,
 }
 
+pub fn build_context(verify_url: &str) -> Context {
+    let mut context = Context::new();
+    context.insert("action_url", verify_url);
+    context
+}
+
 impl Job for SendResetPasswordEmail {
     type State = JobState;
     type Future = Pin<Box<dyn Future<Output = Result<(), Error>> + Send>>;
@@ -44,11 +50,7 @@ impl Job for SendResetPasswordEmail {
                 "email/reset-password",
                 &[account.email],
                 "Reset your account password",
-                {
-                    let mut context = Context::new();
-                    context.insert("action_url", &verify_url);
-                    context
-                },
+                build_context(&verify_url),
                 state.templates,
             );
 

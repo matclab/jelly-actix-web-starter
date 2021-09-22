@@ -1,3 +1,4 @@
+use std::env::var;
 use std::future::Future;
 use std::pin::Pin;
 
@@ -13,7 +14,17 @@ use crate::accounts::Account;
 /// has been verified.
 #[derive(Debug, Serialize, Deserialize)]
 pub struct SendWelcomeAccountEmail {
-    pub to: i32,
+    pub to: i32, // TODO use a more specific type.
+}
+
+pub fn build_context(name: &str) -> Context {
+    let mut context = Context::new();
+    context.insert("name", name);
+    context.insert(
+        "help_url",
+        &var("JELLY_HELP_URL").expect("JELLY_HELP_URL not set?"),
+    );
+    context
 }
 
 impl Job for SendWelcomeAccountEmail {
@@ -33,11 +44,7 @@ impl Job for SendWelcomeAccountEmail {
                 "email/welcome",
                 &[email],
                 "Welcome to the service",
-                {
-                    let mut context = Context::new();
-                    context.insert("name", &name);
-                    context
-                },
+                build_context(&name),
                 state.templates,
             );
 

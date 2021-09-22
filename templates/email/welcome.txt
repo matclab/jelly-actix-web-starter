@@ -1,3 +1,4 @@
+Welcome {{ name }}!
 
 Thanks for signing up. We’re thrilled to have you on board.
 

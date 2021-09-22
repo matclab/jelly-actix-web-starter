@@ -23,6 +23,19 @@ pub struct SendAccountOddRegisterAttemptEmail {
     pub to: String,
 }
 
+pub fn build_context(name: &str) -> Context {
+    let mut context = Context::new();
+    context.insert("name", name);
+    context.insert(
+        "action_url",
+        &format!(
+            "{}/accounts/reset/",
+            var("DOMAIN").expect("DOMAIN not set?")
+        ),
+    );
+    context
+}
+
 impl Job for SendAccountOddRegisterAttemptEmail {
     type State = JobState;
     type Future = Pin<Box<dyn Future<Output = Result<(), Error>> + Send>>;
@@ -36,7 +49,7 @@ impl Job for SendAccountOddRegisterAttemptEmail {
                 .await
                 .map_err(|e| {
                     anyhow!(
-                        "Error fetching user name/email for odd registration attempt: {:?}",
+                        "Error fetching user name for odd registration attempt: {:?}",
                         e
                     )
                 })?;
@@ -45,18 +58,7 @@ impl Job for SendAccountOddRegisterAttemptEmail {
                 "email/odd-registration-attempt",
                 &[self.to],
                 "Did you want to reset your password?",
-                {
-                    let mut context = Context::new();
-                    context.insert("name", &name);
-                    context.insert(
-                        "action_url",
-                        &format!(
-                            "{}/accounts/reset/",
-                            var("DOMAIN").expect("DOMAIN not set?")
-                        ),
-                    );
-                    context
-                },
+                build_context(&name),
                 state.templates,
             );
 
