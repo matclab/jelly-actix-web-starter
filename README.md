@@ -104,6 +104,8 @@ In development, your templates are automatically reloaded on edit. Jelly also pr
 
 In production, both of these are disabled.
 
+Your template may use any of the environment variable starting with `JELLY_`.
+
 ## Static
 The `static` folder is where you can place any static things. In development, [actix-files]() is preconfigured to serve content from that directory, in order to make life easier for just running on your machine. This is disabled in the `production` build, mostly because we tend to shove this behind Nginx. You can swap this as needed.
 
