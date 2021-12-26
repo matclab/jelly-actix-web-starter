@@ -1,6 +1,7 @@
 use jelly::jobs::{JobState, WorkerConfig};
 
 mod verify;
+pub use verify::build_context as build_verify_context;
 pub use verify::SendVerifyAccountEmail;
 
 mod welcome;

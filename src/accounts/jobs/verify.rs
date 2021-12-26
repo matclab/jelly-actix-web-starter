@@ -16,6 +16,12 @@ pub struct SendVerifyAccountEmail {
     pub to: i32,
 }
 
+pub fn build_context(verify_url: &str) -> Context {
+    let mut context = Context::new();
+    context.insert("action_url", &verify_url);
+    context
+}
+
 impl Job for SendVerifyAccountEmail {
     type State = JobState;
     type Future = Pin<Box<dyn Future<Output = Result<(), Error>> + Send>>;
@@ -44,11 +50,7 @@ impl Job for SendVerifyAccountEmail {
                 "email/verify-account",
                 &[account.email],
                 "Verify your new account",
-                {
-                    let mut context = Context::new();
-                    context.insert("action_url", &verify_url);
-                    context
-                },
+                build_context(&verify_url),
                 state.templates,
             );
 

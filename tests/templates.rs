@@ -4,8 +4,7 @@ use dotenv;
 use jelly::tera::Tera;
 use std::env;
 
-//    static ref ROOT: &'static Path = Path::new("data/");
-
+// Load templates once for the tests
 lazy_static! {
     static ref TEMPLATES: Tera = {
         dotenv::dotenv().ok();
@@ -23,7 +22,6 @@ mod template_should_work_for {
 
     #[allow(unused_imports)]
     use anyhow::{self, bail};
-    use jelly::tera::Context;
     use log::debug;
     use mainlib::accounts::jobs;
     use std::env;
@@ -72,13 +70,11 @@ mod template_should_work_for {
     #[test]
     fn verify_account() -> Result<(), anyhow::Error> {
         dotenv::dotenv().ok();
-        let mut context = Context::new();
-        context.insert("action_url", "/verify/account");
         let email = jelly::email::Email::new(
             "email/verify-account",
             &["Erby Doe <test@example.com>".to_string()],
             "Test subject",
-            context,
+            jobs::build_verify_context("/verify/account"),
             Arc::new(RwLock::new(TEMPLATES.clone())),
         )?;
 
