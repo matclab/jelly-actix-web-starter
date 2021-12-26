@@ -50,6 +50,12 @@ pub struct Email {
 
 impl Email {
     /// Construct a new `Email`.
+    ///
+    /// * [`template_name`] : the template name to be used
+    /// * [`to`] : an array of destinationemail addresses
+    /// * [`subject`] : the mail subject line
+    /// * [`context`] : the [`Context`] used to render the template
+    /// * [`templates`] : the tera templates
     pub fn new(
         template_name: &str,
         to: &[String],
