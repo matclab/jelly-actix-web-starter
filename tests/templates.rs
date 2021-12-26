@@ -22,6 +22,7 @@ mod template_should_work_for {
 
     #[allow(unused_imports)]
     use anyhow::{self, bail};
+    use jelly::tera::escape_html;
     use log::debug;
     use mainlib::accounts::jobs;
     use std::env;
@@ -44,6 +45,8 @@ mod template_should_work_for {
         assert_eq!(email.subject, "Test subject");
         debug!("{}", email.body);
         assert!(email.body.contains("accounts/reset"));
+        debug!("{}", email.bodyhtml);
+        assert!(email.bodyhtml.contains(&escape_html("accounts/reset")));
         Ok(())
     }
 
@@ -63,7 +66,8 @@ mod template_should_work_for {
         assert_eq!(email.subject, "Test subject");
         debug!("{}", email.body);
         assert!(email.body.contains("/verify/xxxx"));
-        //bail!("Not implemented!");
+        debug!("{}", email.bodyhtml);
+        assert!(email.bodyhtml.contains(&escape_html("/verify/xxxx")));
         Ok(())
     }
 
@@ -83,7 +87,8 @@ mod template_should_work_for {
         assert_eq!(email.subject, "Test subject");
         debug!("{}", email.body);
         assert!(email.body.contains("/verify/account"));
-        //bail!("Not implemented!");
+        debug!("{}", email.bodyhtml);
+        assert!(email.bodyhtml.contains(&escape_html("/verify/account")));
         Ok(())
     }
 
@@ -103,7 +108,10 @@ mod template_should_work_for {
         assert_eq!(email.subject, "Test subject");
         debug!("{}", email.body);
         assert!(email.body.contains("http://example.com/help"));
-        //bail!("Not implemented!");
+        debug!("{}", email.bodyhtml);
+        assert!(email
+            .bodyhtml
+            .contains(&escape_html("http://example.com/help")));
         Ok(())
     }
 }
