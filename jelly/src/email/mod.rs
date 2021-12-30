@@ -25,7 +25,8 @@ impl Configurable for Email {
 
 impl Email {
     pub fn send(self) -> Result<(), anyhow::Error> {
-        let mut res = Result::Err(anyhow!("No email provider configured"));
+       #[allow(unused_mut)]
+       let mut res = Result::Err(anyhow!("No email provider configured"));
         #[cfg(feature = "email-postmark")]
         if res.is_err() {
             res = Email::send_via_postmark(&self);
