@@ -33,7 +33,6 @@ impl Email {
             .or_else::<anyhow::Error, _>(|_v| Ok(self.from.clone()))
             .unwrap();
 
-        // TODO REPLY TO with JELLY_SUPPORT_EMAIL env var
         let email = Message::builder()
             .from(self.from.parse()?)
             .reply_to(reply_to.parse()?)
