@@ -45,8 +45,8 @@ mod template_should_work_for {
         assert_eq!(email.subject, "Test subject");
         debug!("{}", email.body);
         assert!(email.body.contains("accounts/reset"));
-        debug!("{}", email.bodyhtml);
-        assert!(email.bodyhtml.contains(&escape_html("accounts/reset")));
+        debug!("{}", email.body_html);
+        assert!(email.body_html.contains(&escape_html("accounts/reset")));
         Ok(())
     }
 
@@ -66,8 +66,8 @@ mod template_should_work_for {
         assert_eq!(email.subject, "Test subject");
         debug!("{}", email.body);
         assert!(email.body.contains("/verify/xxxx"));
-        debug!("{}", email.bodyhtml);
-        assert!(email.bodyhtml.contains(&escape_html("/verify/xxxx")));
+        debug!("{}", email.body_html);
+        assert!(email.body_html.contains(&escape_html("/verify/xxxx")));
         Ok(())
     }
 
@@ -87,8 +87,8 @@ mod template_should_work_for {
         assert_eq!(email.subject, "Test subject");
         debug!("{}", email.body);
         assert!(email.body.contains("/verify/account"));
-        debug!("{}", email.bodyhtml);
-        assert!(email.bodyhtml.contains(&escape_html("/verify/account")));
+        debug!("{}", email.body_html);
+        assert!(email.body_html.contains(&escape_html("/verify/account")));
         Ok(())
     }
 
@@ -108,9 +108,9 @@ mod template_should_work_for {
         assert_eq!(email.subject, "Test subject");
         debug!("{}", email.body);
         assert!(email.body.contains("http://example.com/help"));
-        debug!("{}", email.bodyhtml);
+        debug!("{}", email.body_html);
         assert!(email
-            .bodyhtml
+            .body_html
             .contains(&escape_html("http://example.com/help")));
         Ok(())
     }

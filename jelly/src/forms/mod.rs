@@ -4,7 +4,8 @@
 //! Ex:
 //!
 //! ```rust
-//! use crate::utils::forms::{EmailField, PasswordField, Validation};
+//! use jelly::forms::{EmailField, PasswordField, Validation};
+//! use serde::Deserialize;
 //!
 //! #[derive(Debug, Default, Deserialize)]
 //! pub struct MyForm {

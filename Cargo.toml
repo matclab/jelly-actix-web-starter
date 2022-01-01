@@ -20,7 +20,7 @@ log = "*"
 serde = { version = "1" }
 
 [features]
-default = ["jelly/template_watcher", "jelly/static", "jelly/email-smtp", "jelly/email-postmark", "jelly/email-sendgrid"]
+default = ["jelly/template_watcher", "jelly/static"]
 production = ["jelly/production"]
 [dev-dependencies]
 anyhow = "1.0.42"

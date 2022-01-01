@@ -9,14 +9,14 @@ use lettre::{Message, SmtpTransport, Transport};
 
 /// Check that all needed environment variables are set and not empty.
 pub fn check_conf() {
-    vec![
+    [
         "EMAIL_DEFAULT_FROM",
         "EMAIL_SMTP_HOST",
         "EMAIL_SMTP_PORT",
         "EMAIL_SMTP_USERNAME",
         "EMAIL_SMTP_PASSWORD",
     ]
-    .into_iter()
+    .iter()
     .for_each(|env| env_exists_and_not_empty(env));
 }
 
@@ -40,7 +40,7 @@ impl Email {
             .subject(&self.subject)
             .multipart(MultiPart::alternative_plain_html(
                 self.body.clone(),
-                self.bodyhtml.clone(),
+                self.body_html.clone(),
             ))?;
 
         let creds = Credentials::new(username, password);

@@ -8,15 +8,18 @@ use std::env::var;
 struct EmailAddress<'a> {
     email: &'a String,
 }
+
 #[derive(Serialize, Debug)]
 struct Personalization<'a> {
     to: Vec<EmailAddress<'a>>,
 }
+
 #[derive(Serialize, Debug)]
 struct Content<'a> {
     r#type: &'a String,
     value: &'a String,
 }
+
 #[derive(Serialize, Debug)]
 struct SendgridV3Data<'a> {
     personalizations: Vec<Personalization<'a>>,
@@ -27,8 +30,8 @@ struct SendgridV3Data<'a> {
 
 /// Check that all needed environment variables are set and not empty.
 pub fn check_conf() {
-    vec!["SENDGRID_API_KEY"]
-        .into_iter()
+    ["SENDGRID_API_KEY"]
+        .iter()
         .for_each(|env| env_exists_and_not_empty(env));
 }
 
@@ -50,7 +53,7 @@ impl Email {
                 },
                 Content {
                     r#type: &text_html,
-                    value: &self.bodyhtml,
+                    value: &self.body_html,
                 },
             ],
         };

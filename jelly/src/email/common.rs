@@ -41,7 +41,7 @@ pub struct Email {
 
     /// What to send (HTML)
     #[serde(rename = "HtmlBody")]
-    pub bodyhtml: String,
+    pub body_html: String,
 
     /// Postmark stream to use
     #[serde(rename = "MessageStream")]
@@ -80,7 +80,7 @@ impl Email {
 
         debug!("Context for template {} : {:?}", template_name, &context);
 
-        let bodyhtml = engine
+        let body_html = engine
             .render(&(template_name.to_owned() + ".html"), &context)
             .map_err(Error::msg)?;
         let body = engine
@@ -90,8 +90,8 @@ impl Email {
         Ok(Email {
             to: to.join(","),
             from: var("EMAIL_DEFAULT_FROM").expect("EMAIL_DEFAULT_FROM not set!"),
-            bodyhtml: bodyhtml,
-            body: body,
+            body_html,
+            body,
             subject: subject.to_string(),
             #[cfg(not(feature = "email-postmark"))]
             postmark_message_stream: "".to_string(),

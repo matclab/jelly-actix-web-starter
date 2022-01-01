@@ -10,8 +10,8 @@ use super::common::{env_exists_and_not_empty, Email};
 
 /// Check that all needed environment variables are set and not empty.
 pub fn check_conf() {
-    vec!["POSTMARK_API_KEY", "POSTMARK_MESSAGE_STREAM"]
-        .into_iter()
+    ["POSTMARK_API_KEY", "POSTMARK_MESSAGE_STREAM"]
+        .iter()
         .for_each(|env| env_exists_and_not_empty(env));
 }
 
