@@ -1,0 +1,6 @@
+[hooks]
+pre-commit = "cargo check --all-features && cargo fmt -- --check" #&& cargo test"
+pre-push = "cargo test --features=email-postmark,email-sendgrid,email-smtp --manifest-path jelly/Cargo.toml && cargo test --features=jelly/email-postmark,jelly/email-sendgrid,jelly/email-smtp"
+
+[logging]
+verbose = true
